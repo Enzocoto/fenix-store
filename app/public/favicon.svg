@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Fenix">
+  <rect width="48" height="48" rx="12" fill="#0f3d3e" />
+  <path d="M12 30c0-6 5-11 12-11s12 5 12 11v6H12z" fill="#f2a541" />
+  <circle cx="18" cy="30" r="2.6" fill="#0f3d3e" />
+  <circle cx="30" cy="30" r="2.6" fill="#0f3d3e" />
+  <path d="M20 36c1.6 2 6.4 2 8 0" stroke="#0f3d3e" stroke-width="2" fill="none" stroke-linecap="round" />
+</svg>

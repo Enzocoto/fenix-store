@@ -1,0 +1,8 @@
+Producto,Categoría,Precio objetivo (USD),Problema que resuelve,Encaja con Fenix,Margen objetivo,Riesgo,Estado,Próximo paso
+Funda hamaca asiento trasero,Producto héroe,39-49,Protege el asiento trasero de barro/pelo/baba/agua,Sí (núcleo),>=50%,Plazos de envío,PROVISIONAL,Confirmar proveedor y muestra
+Protector de puerta trasera (par),Bundle,19-29,Arañazos y babas en paneles de puertas,Sí (bundle),>=50%,Montaje no universal,Idea,Añadir al pack del héroe
+Arnés/cinturón de seguridad para perro,Seguridad,15-25,Perro suelto es peligroso al frenar,Sí (mismo coche),>=50%,Tallas y certificación,Idea,Validar tallas y resistencia
+Bebedero portátil para perro,Travel,15-22,Dar agua en paseos y viajes,Sí (travel),>=50%,Categoría competida,Idea,Validar margen real
+Funda asiento delantero,Héroe extendido,29-39,Perros pequeños en copiloto,Sí (variante),>=50%,Fragmentar catálogo,Idea,Probar como color/talla
+Bolsa organizadora de maletero,Travel,25-35,Arena/pelo/desorden en maletero,Sí (viaje en coche),>=50%,Volumen de envío,Idea,Revisar coste de envío
+Funda asiento tipo canasta (carrier),Perro pequeño,35-55,Perro pequeño contenido y cómodo,Sí (perro pequeño),>=50%,Precio alto y logística,Idea,Evaluar demanda

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root {
+    --bg1: #07282a;
+    --bg2: #0f3d3e;
+    --accent: #f2a541;
+    --ink: #ffffff;
+    --sub: #b9dcd8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    width: 1080px; height: 1920px; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 0%, var(--bg2), var(--bg1) 70%);
+    font-family: 'Liberation Sans', system-ui, sans-serif;
+    color: var(--ink);
+  }
+  #stage { position: relative; width: 1080px; height: 1920px; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 96px; opacity: 0; will-change: opacity; }
+  .kicker { letter-spacing: 0.42em; font-size: 30px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 34px; }
+  h1 { font-size: 132px; line-height: 0.98; letter-spacing: -0.03em; font-weight: 800; text-align: center; }
+  h2 { font-size: 78px; line-height: 1.04; letter-spacing: -0.02em; font-weight: 800; text-align: center; max-width: 900px; }
+  .sub { font-size: 44px; line-height: 1.3; color: var(--sub); margin-top: 34px; text-align: center; max-width: 820px; }
+  .accent { color: var(--accent); }
+  .logo { width: 132px; height: 132px; }
+  .pill { display: inline-flex; align-items: center; gap: 18px; background: var(--accent); color: #3a2400; font-weight: 800; font-size: 46px; padding: 34px 64px; border-radius: 999px; }
+  .url { margin-top: 34px; font-size: 40px; color: var(--sub); letter-spacing: 0.04em; }
+  .row { display: flex; gap: 30px; margin-top: 70px; }
+  .card { width: 260px; background: rgba(255,255,255,0.07); border: 2px solid rgba(255,255,255,0.16); border-radius: 32px; padding: 44px 26px; text-align: center; }
+  .card .ic { margin-bottom: 22px; }
+  .card .t { font-size: 34px; font-weight: 700; }
+  .carwrap { width: 840px; max-width: 100%; }
+  .carwrap svg { width: 100%; height: auto; display: block; }
+  .scene > svg { width: 900px; max-width: 100%; height: auto; }
+  .caption { font-size: 46px; font-weight: 700; margin-top: 30px; text-align: center; }
+  .badgebar { margin-top: 30px; display: flex; gap: 18px; }
+  .badgebar span { font-size: 30px; font-weight: 700; color: var(--sub); border: 2px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 12px 26px; }
+  .progress { position: absolute; left: 0; bottom: 0; height: 10px; width: 0; background: var(--accent); }
+  .paw { position: absolute; left: 0; top: 0; }
+  .vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 340px 70px rgba(0,0,0,0.45); }
+
+  /* Square (1:1) layout: shrink type and art so everything fits in 1080x1080 */
+  body.square { height: 1080px; }
+  body.square #stage { height: 1080px; }
+  body.square .scene { padding: 64px 88px; }
+  body.square .kicker { font-size: 26px; margin-bottom: 22px; }
+  body.square h1 { font-size: 92px; }
+  body.square h2 { font-size: 58px; }
+  body.square .caption { font-size: 38px; margin-top: 20px; }
+  body.square .sub { font-size: 36px; }
+  body.square .carwrap { width: 620px; }
+  body.square .scene > svg { width: 660px; }
+  body.square .badgebar span { font-size: 26px; padding: 10px 20px; }
+  body.square .card { width: 220px; padding: 34px 20px; }
+  body.square .card .t { font-size: 30px; }
+  body.square .row { margin-top: 46px; gap: 22px; }
+  body.square #ctaMark { width: 150px; height: 150px; }
+  body.square #ctaMark svg { width: 150px; height: 150px; }
+  body.square #s-cta h1 { font-size: 104px; }
+  body.square .pill { font-size: 40px; padding: 28px 54px; margin-top: 40px; }
+  body.square .url { font-size: 34px; margin-top: 24px; }
+
+  /* Wide (16:9) layout: shorter column so everything fits in 1920x1080 */
+  body.wide { height: 1080px; }
+  body.wide #stage { height: 1080px; }
+  body.wide .scene { padding: 48px 200px; }
+  body.wide .kicker { font-size: 26px; margin-bottom: 20px; }
+  body.wide h1 { font-size: 84px; }
+  body.wide h2 { font-size: 54px; }
+  body.wide .caption { font-size: 38px; margin-top: 20px; }
+  body.wide .sub { font-size: 34px; }
+  body.wide .carwrap { width: 720px; }
+  body.wide .scene > svg { width: 780px; }
+  body.wide .badgebar span { font-size: 26px; padding: 10px 22px; }
+  body.wide .card { width: 220px; padding: 34px 22px; }
+  body.wide .card .ic svg { width: 64px; height: 64px; }
+  body.wide .card .t { font-size: 30px; }
+  body.wide .row { margin-top: 44px; gap: 24px; }
+  body.wide #ctaMark { width: 150px; height: 150px; }
+  body.wide #ctaMark svg { width: 150px; height: 150px; }
+  body.wide #s-cta h1 { font-size: 104px; }
+  body.wide .pill { font-size: 40px; padding: 28px 54px; margin-top: 44px; }
+  body.wide .url { font-size: 34px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- HOOK -->
+  <section class="scene" id="s-hook">
+    <div class="kicker">Fenix</div>
+    <h1>
+      <span class="hl" data-w="1">MUD.</span><br />
+      <span class="hl" data-w="2">HAIR.</span><br />
+      <span class="hl accent" data-w="3">DROOL.</span>
+    </h1>
+    <p class="caption" id="hooksub">Your back seat deserves better.</p>
+    <div id="paws"></div>
+  </section>
+
+  <!-- REVEAL -->
+  <section class="scene" id="s-reveal">
+    <div class="kicker">The dog hammock cover</div>
+    <div class="carwrap" id="carwrap">
+      <svg viewBox="0 0 800 600" width="900" height="675" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dff0ef"/><stop offset="100%" stop-color="#c3dedb"/></linearGradient>
+          <linearGradient id="seat" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a4b4c"/><stop offset="100%" stop-color="#183233"/></linearGradient>
+          <linearGradient id="cover" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14514f"/><stop offset="100%" stop-color="#0b3334"/></linearGradient>
+          <linearGradient id="dog" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f6c98a"/><stop offset="100%" stop-color="#d99a56"/></linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.75"/><stop offset="100%" stop-color="#bcdcd8" stop-opacity="0.35"/></linearGradient>
+          <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0b3334" flood-opacity="0.28"/></filter>
+        </defs>
+        <rect width="800" height="600" fill="url(#sky)"/>
+        <rect x="60" y="60" width="680" height="250" rx="26" fill="#ffffff" opacity="0.5"/>
+        <rect x="90" y="88" width="200" height="190" rx="18" fill="url(#glass)" stroke="#ffffff" stroke-width="6"/>
+        <circle cx="250" cy="130" r="26" fill="#f2a541" opacity="0.85"/>
+        <rect x="40" y="330" width="720" height="210" rx="28" fill="url(#seat)"/>
+        <rect x="70" y="352" width="660" height="26" rx="13" fill="#0e2828" opacity="0.6"/>
+        <rect x="120" y="120" width="70" height="120" rx="16" fill="#173a3b"/>
+        <rect x="610" y="120" width="70" height="120" rx="16" fill="#173a3b"/>
+        <g id="svg-cover">
+          <path d="M150 250 C 300 470, 500 470, 650 250 L 690 470 C 500 560, 300 560, 110 470 Z" fill="url(#cover)" filter="url(#soft)"/>
+          <path d="M150 250 C 300 445, 500 445, 650 250" fill="none" stroke="#f2a541" stroke-width="9" stroke-linecap="round"/>
+        </g>
+        <g id="svg-dog">
+          <ellipse cx="410" cy="450" rx="120" ry="26" fill="#0b2b2b" opacity="0.28"/>
+          <ellipse cx="420" cy="370" rx="104" ry="78" fill="url(#dog)"/>
+          <path d="M480 310 C 550 280, 580 320, 550 360" fill="none" stroke="#d99a56" stroke-width="20" stroke-linecap="round"/>
+          <circle cx="420" cy="280" r="62" fill="url(#dog)"/>
+          <path d="M374 244 C 346 200, 334 244, 360 284 Z" fill="#b9782f"/>
+          <path d="M466 244 C 494 200, 506 244, 480 284 Z" fill="#b9782f"/>
+          <ellipse cx="398" cy="270" rx="10" ry="13" fill="#2a1c0c"/>
+          <ellipse cx="442" cy="270" rx="10" ry="13" fill="#2a1c0c"/>
+          <ellipse cx="420" cy="298" rx="20" ry="15" fill="#f2e6d2"/>
+          <ellipse cx="420" cy="290" rx="9" ry="7" fill="#2a1c0c"/>
+        </g>
+      </svg>
+    </div>
+    <div class="badgebar">
+      <span>Waterproof</span><span>Wipe-clean</span><span>Anti-slip</span>
+    </div>
+  </section>
+
+  <!-- WATERPROOF -->
+  <section class="scene" id="s-water">
+    <div class="kicker">Spills happen</div>
+    <svg viewBox="0 0 900 460" width="900" height="460" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="wcover" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#14514f"/><stop offset="100%" stop-color="#0b3334"/></linearGradient>
+        <filter id="wsoft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#0b3334" flood-opacity="0.3"/></filter>
+      </defs>
+      <rect x="60" y="70" width="780" height="330" rx="40" fill="url(#wcover)" filter="url(#wsoft)"/>
+      <path d="M60 130 h780" stroke="#f2a541" stroke-width="9" opacity="0.75"/>
+      <path id="splash" d="M110 280 q80 -80 160 0 q80 80 160 0 q80 -80 160 0 q70 70 160 0" fill="none" stroke="#bfe7ee" stroke-width="13" stroke-linecap="round" opacity="0.92"/>
+      <g id="drops">
+        <path class="drop" d="M240 210 c -18 38, 18 48, 0 84 c -18 -36, 18 -46, 0 -84 z" fill="#8fd3e0"/>
+        <path class="drop" d="M450 190 c -18 38, 18 48, 0 84 c -18 -36, 18 -46, 0 -84 z" fill="#8fd3e0"/>
+        <path class="drop" d="M660 210 c -18 38, 18 48, 0 84 c -18 -36, 18 -46, 0 -84 z" fill="#8fd3e0"/>
+      </g>
+    </svg>
+    <h2 style="margin-top:40px">Repels mud, water and drool.</h2>
+    <p class="caption" id="waterSub">Wipe it clean in seconds.</p>
+  </section>
+
+  <!-- GRIP -->
+  <section class="scene" id="s-grip">
+    <div class="kicker">No sliding</div>
+    <svg viewBox="0 0 900 460" width="900" height="460" xmlns="http://www.w3.org/2000/svg">
+      <rect x="70" y="90" width="760" height="320" rx="40" fill="#123233"/>
+      <g fill="#2b5d5c" opacity="0.85">
+        <circle cx="150" cy="150" r="14"/><circle cx="250" cy="150" r="14"/><circle cx="350" cy="150" r="14"/><circle cx="450" cy="150" r="14"/><circle cx="550" cy="150" r="14"/><circle cx="650" cy="150" r="14"/><circle cx="750" cy="150" r="14"/>
+        <circle cx="150" cy="250" r="14"/><circle cx="250" cy="250" r="14"/><circle cx="350" cy="250" r="14"/><circle cx="450" cy="250" r="14"/><circle cx="550" cy="250" r="14"/><circle cx="650" cy="250" r="14"/><circle cx="750" cy="250" r="14"/>
+        <circle cx="150" cy="350" r="14"/><circle cx="250" cy="350" r="14"/><circle cx="350" cy="350" r="14"/><circle cx="450" cy="350" r="14"/><circle cx="550" cy="350" r="14"/><circle cx="650" cy="350" r="14"/><circle cx="750" cy="350" r="14"/>
+      </g>
+      <g id="lift">
+        <path d="M70 90 C 240 40, 560 40, 830 90 L 830 260 C 560 210, 240 210, 70 260 Z" fill="url(#wcover)"/>
+        <path d="M120 168 C 320 122, 560 122, 760 168" fill="none" stroke="#f2a541" stroke-width="9" stroke-linecap="round" opacity="0.85"/>
+      </g>
+    </svg>
+    <h2>Stays put on leather and cloth.</h2>
+  </section>
+
+  <!-- TRUST -->
+  <section class="scene" id="s-trust">
+    <div class="kicker">Real-dog essentials</div>
+    <h2 id="trustTitle">Made for the messy days.</h2>
+    <div class="row" id="trustRow">
+      <div class="card">
+        <div class="ic"><svg width="86" height="86" viewBox="0 0 48 48" fill="none" stroke="#f2a541" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 30V16h20l8 8h12v6"/><circle cx="12" cy="36" r="4"/><circle cx="36" cy="36" r="4"/><path d="M4 30h4m8 0h16"/></svg></div>
+        <div class="t">Ships direct</div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="86" height="86" viewBox="0 0 48 48" fill="none" stroke="#f2a541" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h24l-8-8"/><path d="M40 28H16l8 8"/></svg></div>
+        <div class="t">Easy returns</div>
+      </div>
+      <div class="card">
+        <div class="ic"><svg width="86" height="86" viewBox="0 0 48 48" fill="none" stroke="#f2a541" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="12" width="36" height="24" rx="4"/><path d="M7 14l17 12 17-12"/></svg></div>
+        <div class="t">Email support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="scene" id="s-cta">
+    <div id="ctaMark" style="width:200px;height:200px">
+      <svg viewBox="0 0 48 48" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="#f2a541"/>
+        <path d="M12 30c0-6 5-11 12-11s12 5 12 11v6H12z" fill="#0f3d3e"/>
+        <circle cx="18" cy="30" r="2.6" fill="#f2a541"/><circle cx="30" cy="30" r="2.6" fill="#f2a541"/>
+        <path d="M20 36c1.6 2 6.4 2 8 0" stroke="#f2a541" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1 style="font-size:150px;margin-top:20px">Fenix</h1>
+    <p class="caption">A cleaner back seat. A calmer dog.</p>
+    <div class="pill" id="ctaPill" style="margin-top:64px">Shop now</div>
+    <div class="url">fenix.example</div>
+  </section>
+
+  <div class="vignette"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script>
+  window.DURATION = 25000;
+  if (location.hash.indexOf('square') !== -1) document.body.classList.add('square');
+  if (location.hash.indexOf('wide') !== -1) document.body.classList.add('wide');
+
+  const clamp = (v, a, b) => Math.min(1, Math.max(0, (v - a) / (b - a)));
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const lerp = (a, b, x) => a + (b - a) * x;
+
+  const el = (id) => document.getElementById(id);
+  const scenes = ['s-hook', 's-reveal', 's-water', 's-grip', 's-trust', 's-cta'].map(el);
+
+  const pawHost = el('paws');
+  const paws = [];
+  for (let i = 0; i < 7; i++) {
+    const d = document.createElement('div');
+    d.className = 'paw';
+    d.innerHTML = '<svg width="88" height="88" viewBox="0 0 60 60"><g fill="#7a5a30" opacity="0.55"><ellipse cx="30" cy="40" rx="15" ry="12"/><circle cx="15" cy="24" r="7"/><circle cx="25" cy="16" r="7"/><circle cx="37" cy="16" r="7"/><circle cx="47" cy="24" r="7"/></g></svg>';
+    pawHost.appendChild(d);
+    paws.push(d);
+  }
+
+  function sceneAlpha(t, start, end, fade) {
+    const a = clamp(t, start, start + fade);
+    const b = 1 - clamp(t, end - fade, end);
+    return easeInOut(Math.min(a, b));
+  }
+
+  const words = document.querySelectorAll('.hl');
+  const coverGroup = el('svg-cover');
+  const dogGroup = el('svg-dog');
+  const carwrap = el('carwrap');
+  const hooksub = el('hooksub');
+  const drops = document.querySelectorAll('#drops .drop');
+  const splash = el('splash');
+  const lift = el('lift');
+  const cards = document.querySelectorAll('#trustRow .card');
+  const trustTitle = el('trustTitle');
+  const ctaMark = el('ctaMark');
+  const ctaPill = el('ctaPill');
+  const progress = el('progress');
+
+  // Timeline per mode. "short" (#short) = hook-test cut; default = full promo.
+  const SHORT = location.hash.indexOf('short') !== -1;
+  const TL = SHORT
+    ? { dur: 9.0, hook: [0, 2.9], reveal: [2.9, 5.7], water: null, grip: null, trust: null, cta: [5.7, 9.0] }
+    : { dur: 25.0, hook: [0, 3.4], reveal: [3.4, 8.2], water: [8.2, 12.6], grip: [12.6, 16.8], trust: [16.8, 21.0], cta: [21.0, 25.0] };
+  window.DURATION = TL.dur * 1000;
+
+  window.renderAt = function (ms) {
+    const t = ms / 1000;
+    const at = (k) => (TL[k] ? t - TL[k][0] : t);
+
+    scenes[0].style.opacity = TL.hook ? sceneAlpha(t, TL.hook[0], TL.hook[1], 0.4) : 0;
+    scenes[1].style.opacity = TL.reveal ? sceneAlpha(t, TL.reveal[0], TL.reveal[1], 0.5) : 0;
+    scenes[2].style.opacity = TL.water ? sceneAlpha(t, TL.water[0], TL.water[1], 0.5) : 0;
+    scenes[3].style.opacity = TL.grip ? sceneAlpha(t, TL.grip[0], TL.grip[1], 0.5) : 0;
+    scenes[4].style.opacity = TL.trust ? sceneAlpha(t, TL.trust[0], TL.trust[1], 0.5) : 0;
+    scenes[5].style.opacity = TL.cta ? sceneAlpha(t, TL.cta[0], TL.cta[1], 0.5) : 0;
+
+    // HOOK
+    const hv = at('hook');
+    const hookLen = TL.hook ? TL.hook[1] - TL.hook[0] : 3.4;
+    const starts = [0.15, 0.55, 0.95];
+    words.forEach((w, i) => {
+      const p = easeOut(clamp(hv, starts[i], starts[i] + 0.7));
+      w.style.display = 'inline-block';
+      w.style.transform = 'translateY(' + lerp(70, 0, p) + '%)';
+      w.style.opacity = p;
+    });
+    const subP = easeOut(clamp(hv, 1.6, 2.3));
+    hooksub.style.opacity = subP;
+    hooksub.style.transform = 'translateY(' + lerp(20, 0, subP) + 'px)';
+    const pawY0 = innerHeight * 0.74;
+    const pawY1 = innerHeight * 0.81;
+    paws.forEach((p, i) => {
+      const start = 1.3 + i * 0.2;
+      const pr = easeOut(clamp(hv, start, start + 2.0));
+      p.style.transform = 'translate(' + lerp(60, innerWidth * 0.82, pr) + 'px,' + lerp(pawY0, pawY1, pr) + 'px) rotate(' + (i % 2 ? -14 : 14) + 'deg)';
+      p.style.opacity = clamp(hv, start, start + 0.4) * (1 - clamp(hv, hookLen - 0.5, hookLen - 0.1));
+    });
+
+    // REVEAL
+    const rv = at('reveal');
+    if (coverGroup) {
+      coverGroup.style.transformOrigin = '50% 42%';
+      coverGroup.style.transform = 'scaleY(' + lerp(0.02, 1, easeOut(clamp(rv, 0.3, 2.0))) + ')';
+      coverGroup.style.opacity = clamp(rv, 0.2, 1.0);
+    }
+    if (dogGroup) {
+      dogGroup.style.transform = 'translateY(' + lerp(70, 0, easeOut(clamp(rv, 1.2, 2.5))) + 'px)';
+      dogGroup.style.opacity = clamp(rv, 1.1, 2.0);
+    }
+    carwrap.style.transform = 'translateY(' + lerp(50, 0, easeOut(clamp(rv, 0.1, 2.8))) + 'px)';
+
+    // WATER
+    const wv = at('water');
+    drops.forEach((d, i) => {
+      const p = clamp(wv, 0.8 + i * 0.25, 3.0 + i * 0.25);
+      d.style.transform = 'translateY(' + lerp(-100, 150, easeOut(p)) + 'px)';
+      d.style.opacity = Math.sin(Math.PI * p);
+    });
+    if (splash) splash.style.transform = 'translateY(' + lerp(-12, 10, easeInOut(clamp(wv, 0.1, 2.0))) + 'px)';
+
+    // GRIP
+    const gv = at('grip');
+    if (lift) {
+      lift.style.transformOrigin = '50% 60%';
+      lift.style.transform = 'rotate(' + lerp(-2.2, 2.2, easeInOut(clamp(gv, 0.4, 3.8))) + 'deg)';
+    }
+
+    // TRUST
+    const tv = at('trust');
+    trustTitle.style.transform = 'translateY(' + lerp(30, 0, easeOut(clamp(tv, 0.2, 1.2))) + 'px)';
+    cards.forEach((c, i) => {
+      const p = easeOut(clamp(tv, 0.6 + i * 0.22, 1.7 + i * 0.22));
+      c.style.transform = 'translateY(' + lerp(56, 0, p) + 'px)';
+      c.style.opacity = p;
+    });
+
+    // CTA
+    const cv = at('cta');
+    const markS = easeOut(clamp(cv, 0.3, 1.2));
+    ctaMark.style.transform = 'scale(' + lerp(0.6, 1, markS) + ')';
+    ctaMark.style.opacity = markS;
+    const pillS = easeOut(clamp(cv, 1.1, 2.0));
+    ctaPill.style.transform = 'scale(' + lerp(0.85, 1, pillS) + ')';
+    ctaPill.style.opacity = pillS;
+
+    progress.style.width = (clamp(t, 0, TL.dur) / TL.dur * 1080) + 'px';
+  };
+
+  window.renderAt(0);
+</script>
+</body>
+</html>

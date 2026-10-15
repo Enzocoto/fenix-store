@@ -1,0 +1,22 @@
+{
+  "name": "Fenix",
+  "colors": {
+    "ink": "#0c1a19",
+    "inkSoft": "#3a4d4b",
+    "muted": "#6b7d7b",
+    "line": "#e2e2da",
+    "surface": "#ffffff",
+    "surfaceAlt": "#f7f5ef",
+    "brand": "#0f3d3e",
+    "brandStrong": "#08292a",
+    "brandSoft": "#e2eeee",
+    "accent": "#f2a541",
+    "accentStrong": "#c97f1f"
+  },
+  "typography": {
+    "display": "Sora (600/700/800)",
+    "body": "Inter (400/500/600/700)",
+    "source": "Google Fonts"
+  },
+  "radius": { "sm": "10px", "md": "16px", "lg": "24px" }
+}

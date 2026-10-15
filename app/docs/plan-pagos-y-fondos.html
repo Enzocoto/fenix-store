@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Fenix — Pagos, proveedor y fondos</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #14211f; line-height: 1.5; margin: 0; font-size: 11.5pt; }
+  .page { max-width: 760px; margin: 0 auto; padding: 34px 40px; }
+  h1 { font-size: 23pt; margin: 0 0 4px; letter-spacing: -0.02em; }
+  h2 { font-size: 14.5pt; margin: 26px 0 8px; padding-bottom: 5px; border-bottom: 2px solid #0f3d3e; color: #0f3d3e; }
+  h3 { font-size: 12pt; margin: 16px 0 6px; }
+  p, li { font-size: 10.6pt; }
+  .sub { color: #5a6b69; margin: 0 0 2px; }
+  .meta { color: #7a8a88; font-size: 9.5pt; margin-bottom: 18px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 6px; font-size: 9.9pt; }
+  th, td { border: 1px solid #d9dedd; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #eef3f2; font-weight: 700; }
+  .tag { display: inline-block; font-size: 8.4pt; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+  .no { background: #fbe3e1; color: #a3241b; }
+  .yes { background: #e2f0e6; color: #1c6b3a; }
+  .part { background: #fdf0d9; color: #9a6414; }
+  .box { border: 1px solid #d9dedd; background: #f7f5ef; border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+  .warn { border-left: 4px solid #c97f1f; background: #fdf6ea; border-radius: 6px; padding: 10px 14px; margin: 12px 0; }
+  code { background: #eef3f2; border: 1px solid #dde5e3; border-radius: 4px; padding: 0 4px; font-size: 9.6pt; }
+  pre { background: #0f2320; color: #d9efe9; border-radius: 8px; padding: 12px 14px; font-size: 9.4pt; overflow-wrap: anywhere; white-space: pre-wrap; }
+  ol, ul { padding-left: 20px; }
+  li { margin-bottom: 3px; }
+  .small { font-size: 9.3pt; color: #5a6b69; }
+  .avoid { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .footer { margin-top: 28px; border-top: 1px solid #d9dedd; padding-top: 10px; color: #7a8a88; font-size: 9pt; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Fenix — Pagos, proveedor y fondos para arrancar</h1>
+  <p class="sub">Estado real de la tienda, qué falta para cobrar de verdad, cuánto dinero necesitas al inicio y qué necesito de ti.</p>
+  <p class="meta">Documento preparado a partir del código actual del proyecto. Versión 1 · Uso interno.</p>
+
+  <div class="warn">
+    <strong>Resumen en una frase:</strong> Fenix ya es una <strong>tienda con backend y portal personal multi-tienda listos para conectar</strong>, pero <strong>todavía nadie ha creado las cuentas</strong> (dominio, hosting, Stripe, proveedor), así que no cobra ni envía datos a ningún sitio.
+  </div>
+
+  <h2>1. Qué está conectado hoy (y qué no)</h2>
+  <table class="avoid">
+    <tr><th>Componente</th><th>Estado</th><th>Qué significa</th></tr>
+    <tr><td>Tienda (diseño, catálogo, carrito)</td><td><span class="tag yes">LISTO</span></td><td>Funciona y se ve bien; los datos de producto son de ejemplo.</td></tr>
+    <tr><td>Checkout</td><td><span class="tag part">DEMO / CONECTABLE</span></td><td>Valida y, si defines <code>VITE_API_URL</code>, llama al backend; con claves de Stripe cobra de verdad. Sin claves, muestra "DEMO-XXXXXX".</td></tr>
+    <tr><td>Proveedor (stock, costos, envío)</td><td><span class="tag no">NO CONECTADO</span></td><td>No hay cuenta de proveedor ni API key. No se puede confirmar stock, costo ni plazo.</td></tr>
+    <tr><td>Fotos del producto</td><td><span class="tag part">PROVISIONAL</span></td><td>Son de un listado público de terceros, no de tu proveedor. Hay que reemplazarlas.</td></tr>
+    <tr><td>Cobro real (tarjeta)</td><td><span class="tag part">LISTO (solo falta la clave)</span></td><td>El código de Stripe ya está; solo falta pegar tus claves en <code>.env</code>.</td></tr>
+    <tr><td>Servidor / backend</td><td><span class="tag yes">CONSTRUIDO</span></td><td>API en Node + Express + PostgreSQL (carpeta <code>server/</code>). Listo para desplegar en Render.</td></tr>
+    <tr><td>Portal personal solo para ti (creador)</td><td><span class="tag yes">CONSTRUIDO</span></td><td>En <code>/#/portal</code> con login; muestra portfolio, finanzas, ventas y tráfico por red social. No está enlazado al público.</td></tr>
+    <tr><td>Retiro a cripto</td><td><span class="tag no">NO CONFIGURADO</span></td><td>Se puede montar, pero depende de la pasarela y del país.</td></tr>
+  </table>
+  <p class="small">Conclusión: la tienda y el panel <strong>ya existen y están listos para conectar</strong>. Lo único que falta para vender es <strong>crear las cuentas</strong> (dominio, hosting, Stripe, proveedor) y pegar las claves. Nada está cobrando todavía porque no hay cuentas creadas.</p>
+
+  <h2>1b. Lo que YA está construido (genérico y reutilizable)</h2>
+  <p>El proyecto se hizo <strong>sin atarlo a un producto</strong>: cambiando el nombre, los colores (<code>app/src/config/site.ts</code>) y las fotos, sirve para cualquier nicho. Consta de dos partes:</p>
+  <table class="avoid">
+    <tr><th>Parte</th><th>Qué hace</th></tr>
+    <tr><td>Escaparate (<code>app/</code>)</td><td>Tienda bilingüe (ES/EN), carrito, checkout y tema recoloreable. Envía la visita a la analítica si hay backend.</td></tr>
+    <tr><td>Backend (<code>server/</code>)</td><td><code>/api/checkout</code> (Stripe o demo), <code>/api/track</code> (visitas con origen/UTM), <code>/api/webhooks/stripe</code> y endpoints de admin (login + resumen, pedidos, analítica y finanzas).</td></tr>
+    <tr><td>Portal personal (<code>/#/portal</code>)</td><td>Portfolio multi-tienda con finanzas (ingresos, COGS, comisiones, beneficio neto, margen), ventas y visitas por producto, red social y campaña.</td></tr>
+  </table>
+  <p class="small">Para que la web envíe datos y cobre, define <code>VITE_API_URL</code> al construirla. Sin esa variable, es un escaparate estático (sin analítica ni cobro), ideal para enseñar.</p>
+
+  <h2>2. El proveedor: ¿tendrá el artículo? ¿cuánto cuesta?</h2>
+  <p><strong>La verdad, sin adornos:</strong> no puedo verificar que "tu proveedor tendrá el artículo" porque <strong>todavía no has elegido proveedor</strong> y no tengo acceso a ninguna cuenta suya. Las fotos que hay en la tienda salen de un listado público de otra tienda; no son de tu proveedor ni prueban que exista stock para ti.</p>
+  <p>Sin acceso a una cuenta (o sin pedir una muestra física) es <strong>imposible</strong> confirmar de forma fiable: stock real, costo unitario, costo y plazo de envío a EE.UU. Cualquier número que alguien te diera sin eso sería inventado, y aquí no inventamos.</p>
+
+  <h3>Proveedores recomendados (con API para automatizar pedidos)</h3>
+  <table class="avoid">
+    <tr><th>Proveedor</th><th>Ideal para</th><th>Notas</th></tr>
+    <tr><td>CJdropshipping</td><td>Envíos a EE.UU., catálogo amplio</td><td>API y app; almacenes en EE.UU.; buena para este producto.</td></tr>
+    <tr><td>Zendrop</td><td>Automatización y branding</td><td>Buena app; etiquetas y empaque con tu marca.</td></tr>
+    <tr><td>Spocket</td><td>Proveedores EE.UU./EU</td><td>Envíos más rápidos; costos algo mayores.</td></tr>
+    <tr><td>AliExpress (Centro de dropshipping)</td><td>Empezar barato</td><td>Costo bajo; plazos más largos; verificar vendedor y reseñas.</td></tr>
+  </table>
+  <p class="small">Ninguno está contratado. Elegir uno es <strong>decisión tuya</strong> (yo puedo recomendarte, pero la cuenta va a tu nombre).</p>
+
+  <h3>Cómo se verifica de verdad (esto sí lo puedo hacer yo, con tu cuenta)</h3>
+  <ol>
+    <li>Creas la cuenta de proveedor (gratis) y buscas el producto (funda hammock para perros).</li>
+    <li>Se lee el <strong>stock real</strong>, el <strong>costo por unidad</strong> y el <strong>costo/plazo de envío a EE.UU.</strong> (sin y con almacén local).</li>
+    <li>Se pide <strong>una muestra</strong> a tu dirección para confirmar calidad, medidas y fotos propias.</li>
+    <li>Con esos datos reales, se reescriben los números de la tienda (precio, márgenes, plazos) y se quita la etiqueta PROVISIONAL.</li>
+  </ol>
+  <div class="box">
+    <strong>Estimación de referencia (NO confirmada):</strong> para este tipo de funda, en el mercado se suele ver
+    costo de producto ~$8–$18 y envío a EE.UU. ~$3–$10 (varía mucho por almacén y volumen).
+    <strong>No lo tomes como dato</strong>: son rangos típicos a confirmar con tu proveedor.
+  </div>
+
+  <h2>2b. Fondos que necesitas para empezar</h2>
+  <p>Cifras <strong>aproximadas</strong> (verificar precios actuales). Están en USD.</p>
+  <table class="avoid">
+    <tr><th>Concepto</th><th>Estimado</th><th>¿Pago único o recurrente?</th></tr>
+    <tr><td>Dominio (.com)</td><td>~$10–$15 / año</td><td>Recurrente anual</td></tr>
+    <tr><td>Hosting del backend + web (Node en Render/Fly/Railway, plan básico)</td><td>~$7–$20 / mes</td><td>Mensual</td></tr>
+    <tr><td>Muestra del producto + envío</td><td>~$20–$45</td><td>Único</td></tr>
+    <tr><td>Cuenta de proveedor</td><td>$0 (gratis)</td><td>—</td></tr>
+    <tr><td>Cuenta de cobro (Stripe/PayPal)</td><td>$0 alta; comisión ~2.9% + $0.30 por venta</td><td>Por venta</td></tr>
+    <tr><td>Capital para pagar el producto antes de cobrar (ver abajo)</td><td>~$150–$400</td><td>Se recupera con las ventas</td></tr>
+    <tr><td>(Opcional) Publicidad</td><td>$0 si es orgánico</td><td>—</td></tr>
+  </table>
+  <div class="warn">
+    <strong>Por qué necesitas capital de reserva:</strong> la pasarela te paga con retraso (Stripe suele liquidar ~2 días, pero la primera vez puede tardar
+    ~7 días y retener un porcentaje). Mientras tanto, tú <strong>ya le pagaste al proveedor</strong> para enviar el pedido.
+    Por eso, con ventas reales, se necesita un colchón para no quedarte sin efectivo. Un arranque prudente:
+    <strong>~$200–$500 en total</strong> entre herramientas del primer mes, muestra y reserva.
+  </div>
+
+  <h2>3. Cobrar "en la página" y controlar todo tu portfolio</h2>
+  <p>Esto <strong>sí se puede</strong>. La base técnica ya está construida; todavía faltan tus cuentas y claves:</p>
+  <table class="avoid">
+    <tr><th>Pieza</th><th>Para qué</th><th>Se requiere</th></tr>
+    <tr><td>Pasarela de pago (Stripe / Shopify Payments / PayPal)</td><td>Cobrar tarjeta, Apple Pay, Google Pay sin salir de la página</td><td>Cuenta a tu nombre, cuenta bancaria y verificación de identidad (KYC)</td></tr>
+    <tr><td>Backend (servidor Node)</td><td>Crear el pago de forma segura y recibir la confirmación</td><td>Código + hosting (~$7–$20/mes)</td></tr>
+    <tr><td>Portal personal con login</td><td>Ver todas tus tiendas, productos, ventas, finanzas y campañas: <strong>solo tú</strong></td><td>Backend + sistema de usuarios con contraseña</td></tr>
+    <tr><td>Webhook / avisos</td><td>Marcar pedido pagado y avisar al proveedor</td><td>Configurar en la pasarela</td></tr>
+  </table>
+  <div class="warn">
+    <strong>Importante y honesto:</strong> el escaparate puede funcionar como web estática, pero el cobro y el portal personal
+    necesitan <strong>servidor</strong>. La parte "solo para mí" se hace con un <strong>login</strong>, no ocultando botones.
+  </div>
+  <p><strong>Seguridad de tarjetas:</strong> nunca se guardan datos de tarjeta en tu web. Se usan los formularios seguros de la pasarela (Stripe Elements / página hospedada). Nunca debe haber claves secretas en el navegador.</p>
+
+  <h2>4. Sacar el dinero a cripto</h2>
+  <p>La ruta habitual es: <em>ventas → Stripe/Shopify → tu banco</em>. Para convertirlo a cripto hay tres caminos:</p>
+  <ol>
+    <li><strong>Retiro cripto de la propia pasarela:</strong> Stripe ofrece pagos en cripto/stablecoin según país. Es lo más limpio.</li>
+    <li><strong>Exchange:</strong> con el saldo en tu banco, compras USDC/BTC en Coinbase, Kraken o Binance (con tus datos verificados).</li>
+    <li><strong>Cobrar directo en cripto:</strong> Coinbase Commerce o BitPay (el cliente paga en cripto). Más complejo y con volatilidad.</li>
+  </ol>
+  <div class="warn">
+    Ojo con dos cosas: (1) el dinero <strong>sigue siendo ingreso gravable</strong> aunque sea cripto; (2) evita pasarelas "anónimas":
+    suelen acabar en cuentas bloqueadas o fraudes. Mejor una pasarela seria y luego tú mueves a cripto.
+  </div>
+
+  <h2>5. Qué necesito de ti y cómo dármelo (para que yo lo use)</h2>
+  <p>Yo <strong>escribo el código</strong>; tú <strong>creas las cuentas</strong> (deben estar a tu nombre). Lo único que necesito de cada servicio son <strong>claves</strong>, y hay una forma segura de pasármelas.</p>
+  <table class="avoid">
+    <tr><th>Qué</th><th>Por qué lo necesito</th><th>Cómo lo consigues</th></tr>
+    <tr><td>Cuenta Stripe (modo <em>test</em> primero)</td><td>Cobrar tarjetas en tu web</td><td>stripe.com → crear cuenta → Developers → API keys</td></tr>
+    <tr><td><code>STRIPE_SECRET_KEY</code> y <code>STRIPE_PUBLISHABLE_KEY</code></td><td>Backend cobra; frontend muestra el formulario</td><td>Panel de Stripe → Developers</td></tr>
+    <tr><td>Cuenta de proveedor (CJ o Zendrop)</td><td>Confirmar stock/costo y enviar pedidos</td><td>Registro gratis en la web del proveedor</td></tr>
+    <tr><td><code>SUPPLIER_API_KEY</code></td><td>Leer producto y crear pedidos automáticamente</td><td>Panel del proveedor → API</td></tr>
+    <tr><td>Dominio + hosting</td><td>Tener web y servidor en línea</td><td>Namecheap/Porkbun + Render/Fly/Railway</td></tr>
+    <tr><td>Datos de negocio (nombre legal, país, impuestos)</td><td>Configurar impuestos y la pasarela</td><td>Tu registro fiscal/entidad</td></tr>
+  </table>
+
+  <h3>Cómo dármelas sin riesgo (lo importante)</h3>
+  <div class="box">
+    <p style="margin-top:0"><strong>No me pegues las claves en el chat.</strong> Haz esto:</p>
+    <ol>
+      <li>Crea tú el archivo <code>.env</code> en el proyecto (yo te digo dónde y qué variables).</li>
+      <li><strong>No</strong> lo subas a Git ni lo compartas; que quede en <code>.gitignore</code>.</li>
+      <li>Yo escribo el código para que lea esas variables; tú solo rellenas los valores localmente.</li>
+    </ol>
+    <p>Así, las claves se quedan en tu ordenador, no en ningún chat. Ejemplo de variables:</p>
+    <pre>STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+SUPPLIER_API_KEY=...
+ADMIN_EMAIL=tu-correo@dominio.com
+ADMIN_PASSWORD_HASH=...
+PUBLIC_BASE_URL=https://tudominio.com</pre>
+    <p class="small" style="margin-bottom:0">La contraseña del panel se guarda <strong>encriptada</strong> (hash), nunca en texto plano.</p>
+  </div>
+  <p class="small">Si prefieres no darme ninguna clave, también es posible: tú las pones en el servidor y yo solo entrego el código. Pero necesitaré al menos poder probar en modo <em>test</em> para verificar que cobra bien.</p>
+
+  <h2>6. Plan de puesta en marcha (por fases)</h2>
+  <ol>
+    <li><strong>Proveedor:</strong> crear cuenta, confirmar producto/costo/envío, pedir muestra.</li>
+    <li><strong>Dominio + hosting</strong> y subir la web.</li>
+    <li><strong>Stripe en modo test</strong> + backend que crea el pago → probar compra de principio a fin.</li>
+    <li><strong>Panel de administrador</strong> con login (solo para ti): ver pedidos y ventas.</li>
+    <li><strong>Conectar proveedor</strong> (API) para que un pedido pagado se envíe solo.</li>
+    <li><strong>Cambiar a modo real</strong>, activar retiro y, si quieres, retiro a cripto.</li>
+  </ol>
+  <p class="small">Tiempo estimado de desarrollo de las fases 3–5: unos pocos días de trabajo una vez tienes las cuentas creadas.</p>
+
+  <h2>7. Aviso</h2>
+  <p class="small">Este documento es una guía técnica, no asesoría legal ni fiscal. Para vender formalmente (entidad, impuestos, permisos y cómo declarar) consulta a un contador/abogado en tu país. Los precios y comisiones mencionados son aproximados y pueden cambiar; hay que verificarlos en cada proveedor.</p>
+
+  <div class="footer">
+    Fenix · Documento interno · Preparado junto al proyecto de la tienda. Ningún servicio está contratado ni conectado todavía.
+  </div>
+
+</div>
+</body>
+</html>

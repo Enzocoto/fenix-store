@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+coverage/
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs / os
+*.log
+.DS_Store
+
+# generated artifacts / backups (kept in the release tarball, not in git)
+archives/
+video/out/
