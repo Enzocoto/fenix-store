@@ -1,7 +1,9 @@
 import { useI18n } from '../hooks/useI18n';
 
-const videoSrc = '/media/fenix-promo-wide.mp4';
-const posterSrc = '/media/fenix-promo-wide-poster.jpg';
+// Respeta el base de Vite (p. ej. /fenix-store/ en GitHub Pages).
+const mediaBase = import.meta.env.BASE_URL;
+const videoSrc = `${mediaBase}media/fenix-promo-wide.mp4`;
+const posterSrc = `${mediaBase}media/fenix-promo-wide-poster.jpg`;
 
 export function ProductVideo() {
   const { t } = useI18n();

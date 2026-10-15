@@ -11,11 +11,13 @@ interface PhotoProps {
 
 export function Photo({ base, alt, className, loading = 'lazy', sizes }: PhotoProps) {
   const { lang } = useI18n();
+  // Respeta el base de Vite (p. ej. /fenix-store/ en GitHub Pages).
+  const src = `${import.meta.env.BASE_URL}${base.replace(/^\//, '')}`;
   return (
     <picture className={className}>
-      <source srcSet={`${base}.webp`} type="image/webp" />
+      <source srcSet={`${src}.webp`} type="image/webp" />
       <img
-        src={`${base}.jpg`}
+        src={`${src}.jpg`}
         alt={alt[lang]}
         loading={loading}
         decoding="async"
