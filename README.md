@@ -1,5 +1,8 @@
 # Fenix — proyecto completo (frontal + backend)
 
+**Demo en vivo (GitHub Pages):** https://enzocoto.github.io/fenix-store/
+— portal personal: https://enzocoto.github.io/fenix-store/#/portal
+
 Marca **genérica y reutilizable**: cambiando nombre, colores y fotos sirve para
 cualquier nicho. Aquí está **todo**: la tienda pública, el backend con pagos y el
   portal personal multi-tienda con finanzas y analítica. No depende de nada fuera de esta carpeta.
@@ -67,6 +70,16 @@ producto.
 
 ## Despliegue
 
+### GitHub Pages (escaparate estático, ya activo)
+
+El workflow `.github/workflows/deploy.yml` construye `app/` y publica el
+escaparate en **https://enzocoto.github.io/fenix-store/** en cada push a `main`.
+El build recibe `VITE_BASE=/fenix-store/` para que los assets y las fotos
+resuelvan bajo el subpath del repositorio. Sin `VITE_API_URL`, esta versión es
+un escaparate estático (checkout en modo demo).
+
+### Render (web + API + PostgreSQL)
+
 La guía está en `docs/deploy-render.md`. El archivo `render.yaml` prepara:
 
 - `fenix-web`: web pública estática.
@@ -90,6 +103,7 @@ npm install            # instala puppeteer y ffmpeg-static (aprobar scripts en e
 node render.mjs        # renderiza los videos promo en out/
 node check-store.mjs   # verifica la tienda (requiere app/ en dev)
 node qa-portal.mjs     # verifica el portal: pestañas, filtro, carrito y checkout (requiere app/ en dev)
+node qa-public.mjs     # QA del sitio publicado en GitHub Pages (rutas y viewports, sin errores)
 node mkpdf.mjs         # regenera app/docs/plan-pagos-y-fondos.pdf
 ```
 
